@@ -1,0 +1,8 @@
+# JVM
+*.class
+*.log
+
+# Scala
+target/
+.idea
+logs
