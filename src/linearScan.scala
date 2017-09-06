@@ -4,6 +4,8 @@ import cats._
 import cats.arrow._
 import cats.implicits._
 
+// TODO: Update and extract documentation.
+
 /* Represent scans as first class objects to be able
  * to compose them.
  *
