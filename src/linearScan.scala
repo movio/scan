@@ -137,7 +137,7 @@ object Scan {
       id[A].map(f)
 
     override def id[A]: Scan[A, A] =
-      Scan[Unit, A, A](())(Tuple2(_, _))
+      Scan[Unit, A, A](())((_, _))
 
     override def compose[A, B, C](f: Scan[B, C], g: Scan[A, B]): Scan[A, C] =
       Scan[(f.State, g.State), A, C]((f.initialState, g.initialState)) {
