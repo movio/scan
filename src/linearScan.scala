@@ -43,6 +43,12 @@ sealed trait Scan[Input, Output] {
 
   def fold(elems: Stream[Input]): Option[Output] =
     scan(elems).lastOption
+
+  def andThen[Next](next: Scan[Output, Next]): Scan[Input, Next] =
+    this >>> next
+
+  def zip[A, B](other: Scan[Input, B]): Scan[Input, (Output, B)] =
+    (this |@| other).map((_, _))
 }
 
 object Scan {
