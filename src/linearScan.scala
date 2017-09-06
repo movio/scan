@@ -53,10 +53,13 @@ object Scan {
       override val step = f
     }
 
-  def lift[A, B]: (A => B) => Scan[A, B] = arrow.lift
-  def id[T]: Scan[T, T] = arrow.id
+  def lift[A, B]: (A => B) => Scan[A, B] =
+    arrowInstance.lift
 
-  def sum[T](implicit s: Semigroup[T]): Scan[T, T] =
+  def id[T]: Scan[T, T] =
+    arrowInstance.id
+
+  def sum[T: Semigroup]: Scan[T, T] =
     Scan[Option[T], T, T](None) {
       case (None, n) => (Some(n), n)
       case (Some(o), n) => {
@@ -78,13 +81,13 @@ object Scan {
     (sum[Double](additive) |@| count(Function.const(true))) map ((s, c) => s / c)
   }
 
-  def min[T](implicit ord: Ordering[T]): Scan[T, T] =
+  def min[T: Ordering]: Scan[T, T] =
     sum(new Semigroup[T] {
-      override def combine(x: T, y: T) = if (ord.lt(x, y)) x else y
+      override def combine(x: T, y: T) = if (implicitly[Ordering[T]].lt(x, y)) x else y
     })
 
-  def max[T](implicit ord: Ordering[T]): Scan[T, T] =
-    min(ord.reverse)
+  def max[T: Ordering]: Scan[T, T] =
+    min(implicitly[Ordering[T]].reverse)
 
   def first[T]: Scan[T, T] = Scan[Option[T], T, T](None) {
     case (None, new_) => (Some(new_), new_)
@@ -112,7 +115,7 @@ object Scan {
         (l, l)
     }.map(_.reverse)
 
-  implicit def apply[T]: Apply[Scan[T, ?]] =
+  implicit def applicativeInstance[T]: Apply[Scan[T, ?]] =
     new Apply[Scan[T, ?]] {
       override def ap[A, B](ff: Scan[T, A ⇒ B])(fa: Scan[T, A]) =
         Scan[(ff.State, fa.State), T, B](ff.initialState, fa.initialState) {
@@ -129,7 +132,7 @@ object Scan {
         }
     }
 
-  implicit val arrow: Arrow[Scan] = new Arrow[Scan] {
+  implicit val arrowInstance: Arrow[Scan] = new Arrow[Scan] {
     override def lift[A, B](f: A => B): Scan[A, B] =
       id[A].map(f)
 
