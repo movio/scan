@@ -49,7 +49,9 @@ sealed trait LinearScan[Input, Output] {
   def andThen[Next](next: LinearScan[Output, Next]): LinearScan[Input, Next] =
     this >>> next
 
-  def map[T](f: Output => T): LinearScan[Input, T] = this andThen LinearScan.lift(f)
+  def map[T](f: Output => T): LinearScan[Input, T] = LinearScan(initialState) {
+    case (s, t) => step(s, t).map(f)
+  }
 
   def using[T](f: T => Input): LinearScan[T, Output] = LinearScan.lift(f) andThen this
 
