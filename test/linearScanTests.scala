@@ -43,7 +43,7 @@ class ScanTest extends FunSuite with GeneratorDrivenPropertyChecks {
   test("f >>> g == g.scan . f.scan") {
     forAll { (f: Scan[Int, Int], g: Scan[Int, Int], input: Stream[Int]) =>
       {
-        whenever(!input.isEmpty) {
+        whenever(input.nonEmpty) {
           val actual: Stream[Int] = (f >>> g).scan(input)
           val expected: Stream[Int] = g.scan(f.scan(input))
           assert(actual == expected)
@@ -54,7 +54,7 @@ class ScanTest extends FunSuite with GeneratorDrivenPropertyChecks {
 
   test("last . scan == foldLeft") {
     forAll { (init: Int, step: (Int, Int) => (Int, Int), input: List[Int]) =>
-      whenever(!input.isEmpty) {
+      whenever(input.nonEmpty) {
         val scan = Scan(init)(step)
         val actual: Int = scan.scan(input.toStream).last
         val expected: Int = {
@@ -71,7 +71,7 @@ class ScanTest extends FunSuite with GeneratorDrivenPropertyChecks {
 
   // Assert if given scan gives the same result as reference implementation `f`.
   def sameAs[T: Arbitrary, R](f: List[T] => R, scan: Scan[T, R])(input: List[T]) =
-    whenever(!input.isEmpty) {
+    whenever(input.nonEmpty) {
       val actual = scan.fold(input.toStream).get
       val expected = f(input)
       assert(actual === expected)
