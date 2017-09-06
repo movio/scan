@@ -74,11 +74,11 @@ object Scan {
   def prev[T]: Scan[T, Option[T]] =
     Scan(None: Option[T])((o, n) => (Some(n), o))
 
-  def mean: Scan[Double, Double] = {
-    val additive: Semigroup[Double] = new Semigroup[Double] {
-      override def combine(x: Double, y: Double) = x + y
-    }
-    (sum[Double](additive) |@| count(Function.const(true))) map ((s, c) => s / c)
+  def mean: Scan[Double, Double] = Scan[(Int, Double), Double, Double]((0, 0)) {
+    case ((count, sum), num) =>
+      val newCount = count + 1
+      val newSum = sum + num
+      ((newCount, newSum), newSum / newCount)
   }
 
   def min[T: Ordering]: Scan[T, T] =
