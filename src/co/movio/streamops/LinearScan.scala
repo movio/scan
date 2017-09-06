@@ -49,8 +49,6 @@ sealed trait LinearScan[Input, Output] {
   def andThen[Next](next: LinearScan[Output, Next]): LinearScan[Input, Next] =
     this >>> next
 
-  def zip[A, B](other: LinearScan[Input, B]): LinearScan[Input, (Output, B)] =
-    (this |@| other).map((_, _))
 }
 
 object LinearScan {
@@ -64,6 +62,36 @@ object LinearScan {
 
   def lift[Input, Output]: (Input => Output) => LinearScan[Input, Output] =
     arrowInstance.lift
+
+  def zip[A, B1, B2](x1: LinearScan[A, B1], x2: LinearScan[A, B2]): LinearScan[A, (B1, B2)] =
+    (x1 |@| x2).map((_, _))
+
+  def zip[A, B1, B2, B3](x1: LinearScan[A, B1],
+                         x2: LinearScan[A, B2],
+                         x3: LinearScan[A, B3]): LinearScan[A, (B1, B2, B3)] =
+    (x1 |@| x2 |@| x3).map((_, _, _))
+
+  def zip[A, B1, B2, B3, B4](x1: LinearScan[A, B1],
+                             x2: LinearScan[A, B2],
+                             x3: LinearScan[A, B3],
+                             x4: LinearScan[A, B4]): LinearScan[A, (B1, B2, B3, B4)] =
+    (x1 |@| x2 |@| x3 |@| x4).map((_, _, _, _))
+
+  def zip[A, B1, B2, B3, B4, B5](x1: LinearScan[A, B1],
+                                 x2: LinearScan[A, B2],
+                                 x3: LinearScan[A, B3],
+                                 x4: LinearScan[A, B4],
+                                 x5: LinearScan[A, B5]): LinearScan[A, (B1, B2, B3, B4, B5)] =
+    (x1 |@| x2 |@| x3 |@| x4 |@| x5).map((_, _, _, _, _))
+
+  def zip[A, B1, B2, B3, B4, B5, B6](
+      x1: LinearScan[A, B1],
+      x2: LinearScan[A, B2],
+      x3: LinearScan[A, B3],
+      x4: LinearScan[A, B4],
+      x5: LinearScan[A, B5],
+      x6: LinearScan[A, B6]): LinearScan[A, (B1, B2, B3, B4, B5, B6)] =
+    (x1 |@| x2 |@| x3 |@| x4 |@| x5 |@| x6).map((_, _, _, _, _, _))
 
   def sum[T](implicit evidence: Numeric[T]): LinearScan[T, T] =
     LinearScan[Option[T], T, T](None) {

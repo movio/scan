@@ -29,7 +29,7 @@ class LinearScanTest extends FunSuite with GeneratorDrivenPropertyChecks {
 
   test("Scans can be combine using `zip`") {
     forAll { (scan1: LinearScan[Int, Int], scan2: LinearScan[Int, Int], input: List[Int]) =>
-      val zipped: LinearScan[Int, (Int, Int)] = scan1 zip scan2
+      val zipped: LinearScan[Int, (Int, Int)] = LinearScan.zip(scan1, scan2)
       val r1: List[(Int, Int)] = zipped.scan(input.toStream).toList
       val r2: List[(Int, Int)] = scan1.scan(input.toStream).toList.zip(scan2.scan(input.toStream))
       assert(r1 == r2, s"$r1 != $r2")
