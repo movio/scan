@@ -1,2 +1,2 @@
-# stream-ops
-Purely functional Stream utilities for Scala
+# scan
+Purely functional Scan abstraction for Scala
