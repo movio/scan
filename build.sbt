@@ -2,6 +2,8 @@ scalaVersion := "2.11.11"
 
 organization := "co.movio"
 
+version := "0.1.0"
+
 scalacOptions := Seq(
   "-Xlint",
   "-deprecation",
