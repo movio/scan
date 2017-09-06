@@ -61,10 +61,10 @@ object Scan {
 
   def sum[T: Semigroup]: Scan[T, T] =
     Scan[Option[T], T, T](None) {
-      case (None, n) => (Some(n), n)
+      case (None, n) => (Option(n), n)
       case (Some(o), n) => {
         val m = o |+| n
-        (Some(m), m)
+        (Option(m), m)
       }
     }
 
@@ -72,7 +72,7 @@ object Scan {
     lift[T, Int](t => if (pred(t)) 1 else 0) >>> sum[Int]
 
   def prev[T]: Scan[T, Option[T]] =
-    Scan(None: Option[T])((o, n) => (Some(n), o))
+    Scan(None: Option[T])((o, n) => (Option(n), o))
 
   def mean: Scan[Double, Double] = Scan[(Int, Double), Double, Double]((0, 0)) {
     case ((count, sum), num) =>
@@ -83,7 +83,7 @@ object Scan {
 
   def min[T: Ordering]: Scan[T, T] =
     sum(new Semigroup[T] {
-      override def combine(x: T, y: T) = if (implicitly[Ordering[T]].lt(x, y)) x else y
+      override def combine(x: T, y: T) = implicitly[Ordering[T]].min(x, y)
     })
 
   def max[T: Ordering]: Scan[T, T] =
@@ -98,13 +98,13 @@ object Scan {
 
   def findFirst[T](pred: T => Boolean): Scan[T, Option[T]] =
     Scan[Option[T], T, Option[T]](None) {
-      case (None, new_) if pred(new_) => (Some(new_), Some(new_))
+      case (None, new_) if pred(new_) => (Option(new_), Option(new_))
       case (old, _) => (old, old)
     }
 
   def findLast[T](pred: T => Boolean): Scan[T, Option[T]] =
     Scan[Option[T], T, Option[T]](None) {
-      case (old, new_) if pred(new_) => (Some(new_), Some(new_))
+      case (old, new_) if pred(new_) => (Option(new_), Option(new_))
       case (old, _) => (old, old)
     }
 
