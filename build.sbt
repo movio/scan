@@ -13,6 +13,11 @@ scalacOptions := Seq(
   "-Ywarn-unused"
 )
 
+scalacOptions in (Compile, doc) ++= Seq(
+  "-groups",
+  "-implicits-show-all"
+)
+
 fork in Test := true
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")

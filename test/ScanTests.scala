@@ -1,4 +1,4 @@
-package co.movio.streamops
+package co.movio.scan
 
 import cats.implicits._
 
@@ -9,10 +9,6 @@ import Matchers._
 import org.scalatest.prop._
 import org.scalatest.Assertions._
 
-@SuppressWarnings(
-  Array("org.wartremover.warts.NonUnitStatements",
-        "org.wartremover.warts.TraversableOps",
-        "org.wartremover.warts.Any"))
 class ScanTest extends FunSuite with GeneratorDrivenPropertyChecks {
   import Utils._
 
