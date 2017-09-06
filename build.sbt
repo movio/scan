@@ -2,9 +2,20 @@ scalaVersion := "2.11.11"
 
 organization := "co.movio"
 
-scalacOptions := Seq("-Xlint", "-deprecation", "-feature")
+scalacOptions := Seq(
+  "-Xlint",
+  "-deprecation",
+  "-feature",
+  "-Yno-adapted-args",
+  "-Ywarn-dead-code",
+  "-Ywarn-numeric-widen",
+  "-Ywarn-value-discard",
+  "-Ywarn-unused"
+)
 
 fork in Test := true
+
+addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")
 
 libraryDependencies ++= Seq(
   "org.typelevel" %% "cats" % "0.9.0",
