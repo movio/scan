@@ -126,7 +126,7 @@ object Scan {
 
   /** Construct a `Scan` given the initial state and the step function.
     * {{{
-    * > val grow: Scan[String, String] = Scan(1) { case (s, i) => (s + 1, i * s}
+    * > val grow: Scan[String, String] = Scan(1) { case (s, i) => (s + 1, i * s) }
     * > sum.scan(Stream("a", "b", "c"))
     * Stream("a", "bb", "ccc")
     * }}}
@@ -203,7 +203,7 @@ object Scan {
       ((newCount, newSum), newSum / newCount)
   }
 
-  /** For every element, yields the smallest element until the element (inclusive).
+  /** For every element, yields the least element until the element (inclusive).
     *
     * @group building
     */
@@ -219,7 +219,7 @@ object Scan {
   def max[T: Ordering]: Scan[T, T] =
     min(implicitly[Ordering[T]].reverse)
 
-  /** Yields the preceeding element for every element except the first one.
+  /** Yields the preceding element for every element except the first one.
     *
     * {{{
     * > Scan.previous.scan(Stream(1, 2, 3))
@@ -231,7 +231,7 @@ object Scan {
   def previous[T]: Scan[T, Option[T]] =
     Scan(None: Option[T])((o, n) => (Option(n), o))
 
-  /** Always yields the last element. Synonymous with [[Scan.id]].
+  /** Always yields the first element.
     *
     * {{{
     * > Scan.first.scan(Stream(1, 2, 3))
