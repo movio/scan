@@ -13,9 +13,9 @@ scalacOptions := Seq(
   "-Ywarn-unused"
 )
 
+autoAPIMappings := true
 scalacOptions in (Compile, doc) ++= Seq(
-  "-groups",
-  "-implicits-show-all"
+  "-groups"
 )
 
 fork in Test := true

@@ -16,10 +16,10 @@ sealed trait Scan[Input, Output] {
   protected val initialState: State
   protected val step: (State, Input) ⇒ (State, Output)
 
-  /** Lazily run the scan over given [[Stream]].
+  /** Lazily run the scan over given `Stream`.
     *
-    * The output [[Stream]] will yield the same number of
-    * elements as the input [[Stream]].
+    * The output `Stream` will yield the same number of
+    * elements as the input `Stream`.
     *
     * {{{
     * > Scan.sum.scan(Stream(1, 2, 3, 4))
@@ -39,7 +39,7 @@ sealed trait Scan[Input, Output] {
     go(elems, initialState)
   }
 
-  /** Execute the scan over given [[Stream]] and return the final result.
+  /** Execute the scan over given `Stream` and return the final result.
     *
     * It will return `None` when the input stream is empty.
     *
@@ -62,7 +62,8 @@ sealed trait Scan[Input, Output] {
     * Stream(3, 5, 7)
     * }}}
     *
-    * If you use `cats`, you can use the `Arrow` instance instead:
+    * If you use `[[https://typelevel.org/cats/ cats]]`, you can use the
+    * `Arrow` instance instead:
     * {{{
     * > import cats.implicits._
     * > twice >>> inc
@@ -81,17 +82,17 @@ sealed trait Scan[Input, Output] {
     * Stream((2, 2), (4, 3), (6, 4))
     * }}}
     *
-    * See also: [[Scan.zip]]
-    *
-    * If you use `cats`, you can use the `Apply` instance instead.
+    * If you use `[[https://typelevel.org/cats/ cats]]`, you can use the
+    * `Apply` instance instead:
     * {{{
     * > import cats.implicits._
     * > Apply[Scan[Int, ?]].tuple2(twice, inc)
     * }}}
     *
+    * @see [[Scan$.zip[A,B1,B2]* Scan.zip]]
     * @group composing
     */
-  def zip[Other](other: Scan[Input, Other]): Scan[Input, (Output, Other)] =
+  def zip[T](other: Scan[Input, T]): Scan[Input, (Output, T)] =
     Scan.applicativeInstance.tuple2(this, other)
 
   /** Apply a function to the result of thus Scan.
@@ -103,6 +104,11 @@ sealed trait Scan[Input, Output] {
 
   /** Maps a function before feeding the input to this Scan.
     *
+    * {{{
+    * > val sumFirsts: Scan [(Int, String), Int] = Scan.sum[Int].using(_._1)
+    * > sumFirsts.scan(Stream((1, "a"), (2, "b"), (3, "c")))
+    * Stream(1, 3, 6)
+    * }}}
     * @group composing
     */
   def using[T](f: T => Input): Scan[T, Output] =
@@ -153,7 +159,8 @@ object Scan {
   def id[T]: Scan[T, T] =
     arrowInstance.id
 
-  /** Combine all values within a container using [[Semigroup.combine.]].
+  /** Combine all values within a container using
+    * [[https://typelevel.org/cats/typeclasses/semigroup.html Semigroup.combine]].
     *
     * @group building
     */
