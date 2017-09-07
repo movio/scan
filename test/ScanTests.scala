@@ -28,8 +28,8 @@ class ScanTest extends FunSuite with GeneratorDrivenPropertyChecks {
   }
 
   test("Scans can be combine using `zip`") {
-    forAll { (scan1: LinearScan[Int, Int], scan2: LinearScan[Int, Int], input: List[Int]) =>
-      val zipped: LinearScan[Int, (Int, Int)] = LinearScan.zip(scan1, scan2)
+    forAll { (scan1: Scan[Int, Int], scan2: Scan[Int, Int], input: List[Int]) =>
+      val zipped: Scan[Int, (Int, Int)] = Scan.zip(scan1, scan2)
       val r1: List[(Int, Int)] = zipped.scan(input.toStream).toList
       val r2: List[(Int, Int)] = scan1.scan(input.toStream).toList.zip(scan2.scan(input.toStream))
       assert(r1 == r2, s"$r1 != $r2")
@@ -37,7 +37,7 @@ class ScanTest extends FunSuite with GeneratorDrivenPropertyChecks {
   }
 
   test("Scans can be chained using `andThen`") {
-    forAll { (f: LinearScan[Int, Int], g: LinearScan[Int, Int], input: Stream[Int]) =>
+    forAll { (f: Scan[Int, Int], g: Scan[Int, Int], input: Stream[Int]) =>
       {
         whenever(input.nonEmpty) {
           val actual: Stream[Int] = (f andThen g).scan(input)
