@@ -149,7 +149,7 @@ class ScanTest extends FunSuite with GeneratorDrivenPropertyChecks {
   }
 
   test("collect") {
-    forAll(sameAs[Int, Seq[Int]](_.toSeq, Scan.collect) _)
+    forAll(sameAs[Int, Seq[Int]](_.toSeq.reverse, Scan.collect) _)
   }
 
   test("stack overflow") {

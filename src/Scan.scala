@@ -273,13 +273,21 @@ object Scan {
       case (old, _) => (old, old)
     }
 
-  /** @group building */
+  /** @group building
+    *
+    * Collect every preceding element (inclusive) to a `Seq` *in reverse order*.
+    *
+    * {{{
+    * > Scan.collect(Stream(1, 2, 3))
+    * Stream(Seq(1), Seq(2, 1), Seq(3, 2, 1))
+    * }}}
+    */
   def collect[T]: Scan[T, Seq[T]] =
     Scan[Seq[T], T, Seq[T]](Seq.empty) {
       case (past, now) =>
         val l = now +: past
         (l, l)
-    }.map(_.reverse)
+    }
 
   /** @group instances */
   implicit def applicativeInstance[T]: Apply[Scan[T, ?]] =
