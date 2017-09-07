@@ -15,6 +15,11 @@ scalacOptions := Seq(
   "-Ywarn-unused"
 )
 
+autoAPIMappings := true
+scalacOptions in (Compile, doc) ++= Seq(
+  "-groups"
+)
+
 fork in Test := true
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")
