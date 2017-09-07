@@ -77,16 +77,20 @@ class ScanTest extends FunSuite with GeneratorDrivenPropertyChecks {
     forAll(sameAs[Int, Int](_.sum, Scan.sum) _)
   }
 
+  test("combine") {
+    forAll(sameAs[Int, Int](_.sum, Scan.combine) _)
+  }
+
   test("count") {
     forAll { (input: List[Int], pred: Int => Boolean) =>
       sameAs[Int, Int](_.filter(pred).length, Scan.count(pred))(input)
     }
   }
 
-  test("prev") {
+  test("previous") {
     forAll { input: List[Boolean] =>
       whenever(input.length > 1) {
-        sameAs[Boolean, Option[Boolean]](_.dropRight(1).lastOption, Scan.prev)(input)
+        sameAs[Boolean, Option[Boolean]](_.dropRight(1).lastOption, Scan.previous)(input)
       }
     }
   }

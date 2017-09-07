@@ -4,9 +4,11 @@ import cats._
 import cats.arrow._
 import cats.implicits._
 
-/** @groupname running Running Scan's
+import scala.math.Numeric._
+
+/** @groupname running Running
   * @groupprio running 0
-  * @groupname composing Composing Scan's
+  * @groupname composing Composing
   * @groupprio composing 1
   */
 sealed trait Scan[Input, Output] {
@@ -71,13 +73,15 @@ sealed trait Scan[Input, Output] {
   def andThen[Next](next: Scan[Output, Next]): Scan[Input, Next] =
     this >>> next
 
-  /** Create a `Scan` which runs given `Scan` in parallel with `this`.
+  /** Create a `Scan` which runs given `Scan` in parallel with this Scan.
     * {{{
     * > val twice = Scan.lift[Int, Int](_ * 2)
     * > val inc   = Scan.lift[Int, Int](_ + 1)
     * > twice.zip(inc).scan(Stream(1, 2, 3))
     * Stream((2, 2), (4, 3), (6, 4))
     * }}}
+    *
+    * See also: [[Scan.zip]]
     *
     * If you use `cats`, you can use the `Apply` instance instead.
     * {{{
@@ -88,11 +92,27 @@ sealed trait Scan[Input, Output] {
     * @group composing
     */
   def zip[Other](other: Scan[Input, Other]): Scan[Input, (Output, Other)] =
-    (this |@| other).map((_, _))
+    Scan.applicativeInstance.tuple2(this, other)
+
+  /** Apply a function to the result of thus Scan.
+    *
+    * @group composing
+    */
+  def map[T](f: Output => T): Scan[Input, T] =
+    Scan.applicativeInstance.map(this)(f)
+
+  /** Maps a function before feeding the input to this Scan.
+    *
+    * @group composing
+    */
+  def using[T](f: T => Input): Scan[T, Output] =
+    this.lmap(f)
 }
 
-/** @groupname building Building Scan's
+/** @groupname building Building
   * @groupprio building 0
+  * @groupname composing Composing
+  * @groupprio composing 1
   * @groupname instances Instances
   * @groupprio instances 1
   */
@@ -137,12 +157,24 @@ object Scan {
     *
     * @group building
     */
-  def sum[T: Semigroup]: Scan[T, T] =
+  def combine[T: Semigroup]: Scan[T, T] =
     Scan[Option[T], T, T](None) {
       case (None, n) => (Option(n), n)
       case (Some(o), n) => {
         val m = o |+| n
         (Option(m), m)
+      }
+    }
+
+  /** Sum all values within a container.
+    *
+    * @group building
+    */
+  def sum[T](implicit evidence: Numeric[T]): Scan[T, T] =
+    Scan[T, T, T](evidence.zero) {
+      case (o, n) => {
+        val s = evidence.plus(o, n)
+        (s, s)
       }
     }
 
@@ -169,7 +201,7 @@ object Scan {
     * @group building
     */
   def min[T: Ordering]: Scan[T, T] =
-    sum(new Semigroup[T] {
+    combine(new Semigroup[T] {
       override def combine(x: T, y: T) = implicitly[Ordering[T]].min(x, y)
     })
 
@@ -183,13 +215,13 @@ object Scan {
   /** Yields the preceeding element for every element except the first one.
     *
     * {{{
-    * > Scan.prev.scan(Stream(1, 2, 3))
+    * > Scan.previous.scan(Stream(1, 2, 3))
     * Stream(None, Some(1), Some(2))
     * }}}
     *
     * @group building
     */
-  def prev[T]: Scan[T, Option[T]] =
+  def previous[T]: Scan[T, Option[T]] =
     Scan(None: Option[T])((o, n) => (Option(n), o))
 
   /** Always yields the last element. Synonymous with [[Scan.id]].
@@ -260,13 +292,92 @@ object Scan {
         }
     }
 
+  /** @group composing */
+  def zip[A, B1, B2]: (Scan[A, B1], Scan[A, B2]) => Scan[A, (B1, B2)] =
+    applicativeInstance.tuple2
+
+  /** @group composing */
+  def zip[A, B1, B2, B3]: (Scan[A, B1], Scan[A, B2], Scan[A, B3]) => Scan[A, (B1, B2, B3)] =
+    applicativeInstance.tuple3
+
+  /** @group composing */
+  def zip[A, B1, B2, B3, B4]
+    : (Scan[A, B1], Scan[A, B2], Scan[A, B3], Scan[A, B4]) => Scan[A, (B1, B2, B3, B4)] =
+    applicativeInstance.tuple4
+
+  /** @group composing */
+  def zip[A, B1, B2, B3, B4, B5]: (Scan[A, B1],
+                                   Scan[A, B2],
+                                   Scan[A, B3],
+                                   Scan[A, B4],
+                                   Scan[A, B5]) => Scan[A, (B1, B2, B3, B4, B5)] =
+    applicativeInstance.tuple5
+
+  /** @group composing */
+  def zip[A, B1, B2, B3, B4, B5, B6]: (Scan[A, B1],
+                                       Scan[A, B2],
+                                       Scan[A, B3],
+                                       Scan[A, B4],
+                                       Scan[A, B5],
+                                       Scan[A, B6]) => Scan[A, (B1, B2, B3, B4, B5, B6)] =
+    applicativeInstance.tuple6
+
+  /** @group composing */
+  def zip[A, B1, B2, B3, B4, B5, B6, B7]: (Scan[A, B1],
+                                           Scan[A, B2],
+                                           Scan[A, B3],
+                                           Scan[A, B4],
+                                           Scan[A, B5],
+                                           Scan[A, B6],
+                                           Scan[A, B7]) => Scan[A, (B1, B2, B3, B4, B5, B6, B7)] =
+    applicativeInstance.tuple7
+
+  /** @group composing */
+  def zip[A, B1, B2, B3, B4, B5, B6, B7, B8]
+    : (Scan[A, B1],
+       Scan[A, B2],
+       Scan[A, B3],
+       Scan[A, B4],
+       Scan[A, B5],
+       Scan[A, B6],
+       Scan[A, B7],
+       Scan[A, B8]) => Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8)] =
+    applicativeInstance.tuple8
+
+  /** @group composing */
+  def zip[A, B1, B2, B3, B4, B5, B6, B7, B8, B9]
+    : (Scan[A, B1],
+       Scan[A, B2],
+       Scan[A, B3],
+       Scan[A, B4],
+       Scan[A, B5],
+       Scan[A, B6],
+       Scan[A, B7],
+       Scan[A, B8],
+       Scan[A, B9]) => Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9)] =
+    applicativeInstance.tuple9
+
+  /** @group composing */
+  def zip[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10]
+    : (Scan[A, B1],
+       Scan[A, B2],
+       Scan[A, B3],
+       Scan[A, B4],
+       Scan[A, B5],
+       Scan[A, B6],
+       Scan[A, B7],
+       Scan[A, B8],
+       Scan[A, B9],
+       Scan[A, B10]) => Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10)] =
+    applicativeInstance.tuple10
+
   /** @group instances */
   implicit val arrowInstance: Arrow[Scan] = new Arrow[Scan] {
     override def lift[A, B](f: A => B): Scan[A, B] =
-      id[A].map(f)
+      Scan[Unit, A, B](()) { case ((), a) => ((), f(a)) }
 
     override def id[A]: Scan[A, A] =
-      Scan[Unit, A, A](())((_, _))
+      Scan.lift(identity)
 
     override def compose[A, B, C](f: Scan[B, C], g: Scan[A, B]): Scan[A, C] =
       Scan[(f.State, g.State), A, C]((f.initialState, g.initialState)) {
