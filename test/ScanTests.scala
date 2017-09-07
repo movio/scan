@@ -27,6 +27,27 @@ class ScanTest extends FunSuite with GeneratorDrivenPropertyChecks {
     }
   }
 
+  test("Scans can be combine using `zip`") {
+    forAll { (scan1: LinearScan[Int, Int], scan2: LinearScan[Int, Int], input: List[Int]) =>
+      val zipped: LinearScan[Int, (Int, Int)] = LinearScan.zip(scan1, scan2)
+      val r1: List[(Int, Int)] = zipped.scan(input.toStream).toList
+      val r2: List[(Int, Int)] = scan1.scan(input.toStream).toList.zip(scan2.scan(input.toStream))
+      assert(r1 == r2, s"$r1 != $r2")
+    }
+  }
+
+  test("Scans can be chained using `andThen`") {
+    forAll { (f: LinearScan[Int, Int], g: LinearScan[Int, Int], input: Stream[Int]) =>
+      {
+        whenever(input.nonEmpty) {
+          val actual: Stream[Int] = (f andThen g).scan(input)
+          val expected: Stream[Int] = g.scan(f.scan(input))
+          assert(actual == expected)
+        }
+      }
+    }
+  }
+
   test("((scan1 |@| scan2) map (,)) xs == (scan1 xs, scan2 xs)") {
     forAll { (scan1: Scan[Int, Int], scan2: Scan[Int, Int], input: List[Int]) =>
       val zipped = (scan1 |@| scan2) map Tuple2.apply
@@ -135,7 +156,7 @@ class ScanTest extends FunSuite with GeneratorDrivenPropertyChecks {
     Scan.max.fold(Stream.fill(1000000)(1)) shouldBe Some(1)
   }
 
-  test("lazyness") {
+  test("laziness") {
     var count = 0
     val scan = Scan.lift[Int, Int](i => { count = count + 1; i })
     scan.scan(Stream.fill(1000)(1)).take(10).foreach(i => {})
