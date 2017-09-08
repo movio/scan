@@ -15,11 +15,6 @@ scalacOptions := Seq(
   "-Ywarn-unused"
 )
 
-autoAPIMappings := true
-scalacOptions in (Compile, doc) ++= Seq(
-  "-groups"
-)
-
 fork in Test := true
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")
@@ -48,5 +43,31 @@ scalaSource in Test := baseDirectory.value / "test"
 
 resourceDirectory in Compile := baseDirectory.value / "resources"
 resourceDirectory in Test := baseDirectory.value / "resources_test"
+
+// Configure Scaladoc and GitHub pages publishing.
+// Run `scaladoc` in SBT to push.
+
+enablePlugins(SiteScaladocPlugin)
+enablePlugins(GhpagesPlugin)
+
+autoAPIMappings := true
+
+git.remoteRepo := "git@github.com:movio/scan.git"
+
+scalacOptions in (Compile, doc) ++= Seq(
+  "-groups"
+)
+
+def scaladoc = Command.command("scaladoc") { state =>
+  val extracted = Project.extract(state)
+  // Use pretty scaladocs from 2.12 when publishing.
+  val newState = extracted.append(Seq(scalaVersion := "2.12.3"), state)
+  extracted.runTask(ghpagesPushSite in doc, newState)
+  state
+}
+
+commands += scaladoc
+
+// Configure other plugins.
 
 scalafmtOnCompile := true
