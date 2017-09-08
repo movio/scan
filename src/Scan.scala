@@ -269,7 +269,7 @@ object Scan {
   /** @group building */
   def findLast[T](pred: T => Boolean): Scan[T, Option[T]] =
     Scan[Option[T], T, Option[T]](None) {
-      case (old, new_) if pred(new_) => (Option(new_), Option(new_))
+      case (_, new_) if pred(new_) => (Option(new_), Option(new_))
       case (old, _) => (old, old)
     }
 
@@ -293,7 +293,7 @@ object Scan {
   implicit def applicativeInstance[T]: Apply[Scan[T, ?]] =
     new Apply[Scan[T, ?]] {
       override def ap[A, B](ff: Scan[T, A ⇒ B])(fa: Scan[T, A]) =
-        Scan[(ff.State, fa.State), T, B](ff.initialState, fa.initialState) {
+        Scan[(ff.State, fa.State), T, B]((ff.initialState, fa.initialState)) {
           case ((ffs, fas), t) ⇒ {
             val (ffs_, f) = ff.step(ffs, t)
             val (fas_, a) = fa.step(fas, t)
