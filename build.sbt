@@ -1,5 +1,7 @@
 scalaVersion := "2.11.11"
 
+crossScalaVersions := Seq("2.11.11", "2.12.3")
+
 organization := "co.movio"
 
 version := "0.1.0"
