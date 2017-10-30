@@ -229,7 +229,7 @@ object Scan {
     * @group building
     */
   def previous[T]: Scan[T, Option[T]] =
-    Scan(None: Option[T])((o, n) => (Option(n), o))
+    Scan[Option[T], T, Option[T]](None)((o, n) => (Some(n), o))
 
   /** Always yields the first element.
     *
@@ -262,14 +262,14 @@ object Scan {
     */
   def findFirst[T](pred: T => Boolean): Scan[T, Option[T]] =
     Scan[Option[T], T, Option[T]](None) {
-      case (None, new_) if pred(new_) => (Option(new_), Option(new_))
+      case (None, new_) if pred(new_) => (Some(new_), Some(new_))
       case (old, _) => (old, old)
     }
 
   /** @group building */
   def findLast[T](pred: T => Boolean): Scan[T, Option[T]] =
     Scan[Option[T], T, Option[T]](None) {
-      case (_, new_) if pred(new_) => (Option(new_), Option(new_))
+      case (_, new_) if pred(new_) => (Some(new_), Some(new_))
       case (old, _) => (old, old)
     }
 
