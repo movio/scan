@@ -390,6 +390,127 @@ object Scan {
       s10: Scan[A, B10]): Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10)] =
     applicativeInstance.tuple10(s1, s2, s3, s4, s5, s6, s7, s8, s9, s10)
 
+  /** @group composing */
+  def zip[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11](
+      s1: Scan[A, B1],
+      s2: Scan[A, B2],
+      s3: Scan[A, B3],
+      s4: Scan[A, B4],
+      s5: Scan[A, B5],
+      s6: Scan[A, B6],
+      s7: Scan[A, B7],
+      s8: Scan[A, B8],
+      s9: Scan[A, B9],
+      s10: Scan[A, B10],
+      s11: Scan[A, B11]): Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11)] =
+    applicativeInstance.tuple11(s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11)
+
+  /** @group composing */
+  def zip[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12](
+      s1: Scan[A, B1],
+      s2: Scan[A, B2],
+      s3: Scan[A, B3],
+      s4: Scan[A, B4],
+      s5: Scan[A, B5],
+      s6: Scan[A, B6],
+      s7: Scan[A, B7],
+      s8: Scan[A, B8],
+      s9: Scan[A, B9],
+      s10: Scan[A, B10],
+      s11: Scan[A, B11],
+      s12: Scan[A, B12]): Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12)] =
+    applicativeInstance.tuple12(s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12)
+
+  /** @group composing */
+  def zip[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13](
+      s1: Scan[A, B1],
+      s2: Scan[A, B2],
+      s3: Scan[A, B3],
+      s4: Scan[A, B4],
+      s5: Scan[A, B5],
+      s6: Scan[A, B6],
+      s7: Scan[A, B7],
+      s8: Scan[A, B8],
+      s9: Scan[A, B9],
+      s10: Scan[A, B10],
+      s11: Scan[A, B11],
+      s12: Scan[A, B12],
+      s13: Scan[A, B13]): Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13)] =
+    applicativeInstance.tuple13(s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13)
+
+  /** @group composing */
+  def zip[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14](
+      s1: Scan[A, B1],
+      s2: Scan[A, B2],
+      s3: Scan[A, B3],
+      s4: Scan[A, B4],
+      s5: Scan[A, B5],
+      s6: Scan[A, B6],
+      s7: Scan[A, B7],
+      s8: Scan[A, B8],
+      s9: Scan[A, B9],
+      s10: Scan[A, B10],
+      s11: Scan[A, B11],
+      s12: Scan[A, B12],
+      s13: Scan[A, B13],
+      s14: Scan[A, B14]): Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14)] =
+    applicativeInstance.tuple14(s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14)
+
+  /** @group composing */
+  def zip[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15](s1: Scan[A, B1],
+                                                                               s2: Scan[A, B2],
+                                                                               s3: Scan[A, B3],
+                                                                               s4: Scan[A, B4],
+                                                                               s5: Scan[A, B5],
+                                                                               s6: Scan[A, B6],
+                                                                               s7: Scan[A, B7],
+                                                                               s8: Scan[A, B8],
+                                                                               s9: Scan[A, B9],
+                                                                               s10: Scan[A, B10],
+                                                                               s11: Scan[A, B11],
+                                                                               s12: Scan[A, B12],
+                                                                               s13: Scan[A, B13],
+                                                                               s14: Scan[A, B14],
+                                                                               s15: Scan[A, B15])
+    : Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15)] =
+    applicativeInstance.tuple15(s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15)
+
+  /** @group composing */
+  def zip[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16](
+      s1: Scan[A, B1],
+      s2: Scan[A, B2],
+      s3: Scan[A, B3],
+      s4: Scan[A, B4],
+      s5: Scan[A, B5],
+      s6: Scan[A, B6],
+      s7: Scan[A, B7],
+      s8: Scan[A, B8],
+      s9: Scan[A, B9],
+      s10: Scan[A, B10],
+      s11: Scan[A, B11],
+      s12: Scan[A, B12],
+      s13: Scan[A, B13],
+      s14: Scan[A, B14],
+      s15: Scan[A, B15],
+      s16: Scan[A, B16])
+    : Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16)] =
+    applicativeInstance.tuple16(s1,
+                                s2,
+                                s3,
+                                s4,
+                                s5,
+                                s6,
+                                s7,
+                                s8,
+                                s9,
+                                s10,
+                                s11,
+                                s12,
+                                s13,
+                                s14,
+                                s15,
+                                s16)
+
   /** @group instances */
   implicit val arrowInstance: Arrow[Scan] = new Arrow[Scan] {
     override def lift[A, B](f: A => B): Scan[A, B] =
