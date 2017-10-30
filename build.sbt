@@ -1,10 +1,9 @@
-scalaVersion := "2.11.11"
-
-crossScalaVersions := Seq("2.11.11", "2.12.3")
-
+name := "scan"
 organization := "co.movio"
-
 version := "0.1.0"
+
+scalaVersion := "2.11.11"
+crossScalaVersions := Seq("2.11.11", "2.12.3")
 
 scalacOptions := Seq(
   "-Xlint",
@@ -72,4 +71,4 @@ commands += scaladoc
 
 // Configure other plugins.
 
-scalafmtOnCompile := true
+scalafmtOnCompile in ThisProject := true
