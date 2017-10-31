@@ -1,6 +1,6 @@
 name := "scan"
 organization := "co.movio"
-version := "0.1.0"
+version := "0.2.0"
 
 scalaVersion := "2.11.11"
 crossScalaVersions := Seq("2.11.11", "2.12.3")
