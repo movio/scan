@@ -3,7 +3,7 @@ organization := "co.movio"
 version := "0.2.0"
 
 scalaVersion := "2.11.11"
-crossScalaVersions := Seq("2.11.11", "2.12.3")
+crossScalaVersions := Seq("2.11.11", "2.12.4")
 
 scalacOptions := Seq(
   "-Xlint",
