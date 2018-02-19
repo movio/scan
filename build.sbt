@@ -21,8 +21,9 @@ fork in Test := true
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")
 
 libraryDependencies ++= Seq(
-  "org.typelevel" %% "cats" % "0.9.0",
-  "org.scalatest" %% "scalatest" % "3.0.1" % Test
+  "org.typelevel" %% "cats-core" % "1.0.1",
+  "org.scalatest" %% "scalatest" % "3.0.4" % Test,
+  "org.scalacheck" %% "scalacheck" % "1.13.4" % Test
 )
 
 // Override the directory structure settings so that subprojects have the
