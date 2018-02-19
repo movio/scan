@@ -303,7 +303,10 @@ object Scan {
 
       override def map[A, B](fa: Scan[T, A])(f: A ⇒ B) =
         Scan[fa.State, T, B](fa.initialState) {
-          case (s, t) => fa.step(s, t).map(f)
+          case (s, t) =>
+            fa.step(s, t) match {
+              case (s_, t_) => (s_, f(t_))
+            }
         }
     }
 

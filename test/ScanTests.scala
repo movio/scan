@@ -50,7 +50,7 @@ class ScanTest extends FunSuite with GeneratorDrivenPropertyChecks {
 
   test("((scan1 |@| scan2) map (,)) xs == (scan1 xs, scan2 xs)") {
     forAll { (scan1: Scan[Int, Int], scan2: Scan[Int, Int], input: List[Int]) =>
-      val zipped = (scan1 |@| scan2) map Tuple2.apply
+      val zipped = Scan.zip(scan1, scan2)
       val r1: List[(Int, Int)] = zipped.scan(input.toStream).toList
       val r2: List[(Int, Int)] = scan1.scan(input.toStream).toList.zip(scan2.scan(input.toStream))
       assert(r1 == r2, s"$r1 != $r2")
@@ -153,7 +153,7 @@ class ScanTest extends FunSuite with GeneratorDrivenPropertyChecks {
   }
 
   test("stack overflow") {
-    Scan.max.fold(Stream.fill(1000000)(1)) shouldBe Some(1)
+    Scan.max[Int].fold(Stream.fill(1000000)(1)) shouldBe Some(1)
   }
 
   test("laziness") {
