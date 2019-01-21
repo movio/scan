@@ -2,7 +2,7 @@ name := "scan"
 organization := "co.movio"
 version := "0.2.0"
 
-scalaVersion := "2.11.11"
+scalaVersion := "2.11.12"
 crossScalaVersions := Seq("2.11.11", "2.12.4")
 
 scalacOptions := Seq(
@@ -18,12 +18,12 @@ scalacOptions := Seq(
 
 fork in Test := true
 
-addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")
+addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.9")
 
 libraryDependencies ++= Seq(
-  "org.typelevel" %% "cats-core" % "1.0.1",
-  "org.scalatest" %% "scalatest" % "3.0.4" % Test,
-  "org.scalacheck" %% "scalacheck" % "1.13.4" % Test
+  "org.typelevel" %% "cats-core" % "1.5.0",
+  "org.scalatest" %% "scalatest" % "3.0.5" % Test,
+  "org.scalacheck" %% "scalacheck" % "1.14.0" % Test
 )
 
 // Override the directory structure settings so that subprojects have the
