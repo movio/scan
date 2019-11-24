@@ -1,4 +1,5 @@
 .gitignore
 .scalafmt.conf
-LICENCE
+LICENSE
 project/*
+build.sbt
