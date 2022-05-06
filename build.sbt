@@ -2,8 +2,7 @@ name := "scan"
 organization := "co.movio"
 version := "0.2.0"
 
-scalaVersion := "2.11.11"
-crossScalaVersions := Seq("2.11.11", "2.12.4")
+scalaVersion := "2.12.8"
 
 scalacOptions := Seq(
   "-Xlint",
@@ -21,7 +20,7 @@ fork in Test := true
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")
 
 libraryDependencies ++= Seq(
-  "org.typelevel" %% "cats-core" % "1.4.0",
+  "org.typelevel" %% "cats-core" % "1.6.1",
   "org.scalatest" %% "scalatest" % "3.0.5" % Test,
   "org.scalacheck" %% "scalacheck" % "1.14.0" % Test
 )
@@ -59,16 +58,6 @@ git.remoteRepo := "git@github.com:movio/scan.git"
 scalacOptions in (Compile, doc) ++= Seq(
   "-groups"
 )
-
-def scaladoc = Command.command("scaladoc") { state =>
-  val extracted = Project.extract(state)
-  // Use pretty scaladocs from 2.12 when publishing.
-  val newState = extracted.append(Seq(scalaVersion := "2.12.3"), state)
-  extracted.runTask(ghpagesPushSite in doc, newState)
-  state
-}
-
-commands += scaladoc
 
 // Configure other plugins.
 

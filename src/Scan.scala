@@ -315,9 +315,7 @@ object Scan {
     applicativeInstance.tuple2(s1, s2)
 
   /** @group composing */
-  def zip[A, B1, B2, B3](s1: Scan[A, B1],
-                         s2: Scan[A, B2],
-                         s3: Scan[A, B3]): Scan[A, (B1, B2, B3)] =
+  def zip[A, B1, B2, B3](s1: Scan[A, B1], s2: Scan[A, B2], s3: Scan[A, B3]): Scan[A, (B1, B2, B3)] =
     applicativeInstance.tuple3(s1, s2, s3)
 
   /** @group composing */
@@ -615,9 +613,9 @@ object Scan {
       s16: Scan[A, B16],
       s17: Scan[A, B17],
       s18: Scan[A, B18],
-      s19: Scan[A, B19]): Scan[
-    A,
-    (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16, B17, B18, B19)] =
+      s19: Scan[A, B19])
+    : Scan[A,
+           (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16, B17, B18, B19)] =
     applicativeInstance.tuple19(
       s1,
       s2,
