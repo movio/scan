@@ -18,8 +18,7 @@ sealed trait Scan[Input, Output] {
 
   /** Lazily run the scan over given `Stream`.
     *
-    * The output `Stream` will yield the same number of
-    * elements as the input `Stream`.
+    * The output `Stream` will yield the same number of elements as the input `Stream`.
     *
     * {{{
     * > Scan.sum.scan(Stream(1, 2, 3, 4))
@@ -62,8 +61,7 @@ sealed trait Scan[Input, Output] {
     * Stream(3, 5, 7)
     * }}}
     *
-    * If you use `[[https://typelevel.org/cats/ cats]]`, you can use the
-    * `Arrow` instance instead:
+    * If you use `[[https://typelevel.org/cats/ cats]]`, you can use the `Arrow` instance instead:
     * {{{
     * > import cats.implicits._
     * > twice >>> inc
@@ -82,14 +80,14 @@ sealed trait Scan[Input, Output] {
     * Stream((2, 2), (4, 3), (6, 4))
     * }}}
     *
-    * If you use `[[https://typelevel.org/cats/ cats]]`, you can use the
-    * `Apply` instance instead:
+    * If you use `[[https://typelevel.org/cats/ cats]]`, you can use the `Apply` instance instead:
     * {{{
     * > import cats.implicits._
     * > Apply[Scan[Int, ?]].tuple2(twice, inc)
     * }}}
     *
-    * @see [[Scan$.zip[A,B1,B2]* Scan.zip]]
+    * @see
+    *   [[Scan$.zip[A,B1,B2]* Scan.zip]]
     * @group composing
     */
   def zip[T](other: Scan[Input, T]): Scan[Input, (Output, T)] =
@@ -167,10 +165,9 @@ object Scan {
   def combine[T: Semigroup]: Scan[T, T] =
     Scan[Option[T], T, T](None) {
       case (None, n) => (Option(n), n)
-      case (Some(o), n) => {
+      case (Some(o), n) =>
         val m = o |+| n
         (Option(m), m)
-      }
     }
 
   /** Sum all values within a container.
@@ -178,11 +175,9 @@ object Scan {
     * @group building
     */
   def sum[T](implicit evidence: Numeric[T]): Scan[T, T] =
-    Scan[T, T, T](evidence.zero) {
-      case (o, n) => {
-        val s = evidence.plus(o, n)
-        (s, s)
-      }
+    Scan[T, T, T](evidence.zero) { case (o, n) =>
+      val s = evidence.plus(o, n)
+      (s, s)
     }
 
   /** Computes the sum of all elements matching given predicate.
@@ -283,30 +278,27 @@ object Scan {
     * }}}
     */
   def collect[T]: Scan[T, Seq[T]] =
-    Scan[Seq[T], T, Seq[T]](Seq.empty) {
-      case (past, now) =>
-        val l = now +: past
-        (l, l)
+    Scan[Seq[T], T, Seq[T]](Seq.empty) { case (past, now) =>
+      val l = now +: past
+      (l, l)
     }
 
   /** @group instances */
-  implicit def applicativeInstance[T]: Apply[Scan[T, ?]] =
-    new Apply[Scan[T, ?]] {
+  implicit def applicativeInstance[T]: Apply[Scan[T, *]] =
+    new Apply[Scan[T, *]] {
       override def ap[A, B](ff: Scan[T, A ⇒ B])(fa: Scan[T, A]) =
         Scan[(ff.State, fa.State), T, B]((ff.initialState, fa.initialState)) {
-          case ((ffs, fas), t) ⇒ {
+          case ((ffs, fas), t) ⇒
             val (ffs_, f) = ff.step(ffs, t)
             val (fas_, a) = fa.step(fas, t)
             ((ffs_, fas_), f(a))
-          }
         }
 
       override def map[A, B](fa: Scan[T, A])(f: A ⇒ B) =
-        Scan[fa.State, T, B](fa.initialState) {
-          case (s, t) =>
-            fa.step(s, t) match {
-              case (s_, t_) => (s_, f(t_))
-            }
+        Scan[fa.State, T, B](fa.initialState) { case (s, t) =>
+          fa.step(s, t) match {
+            case (s_, t_) => (s_, f(t_))
+          }
         }
     }
 
@@ -319,37 +311,45 @@ object Scan {
     applicativeInstance.tuple3(s1, s2, s3)
 
   /** @group composing */
-  def zip[A, B1, B2, B3, B4](s1: Scan[A, B1],
-                             s2: Scan[A, B2],
-                             s3: Scan[A, B3],
-                             s4: Scan[A, B4]): Scan[A, (B1, B2, B3, B4)] =
+  def zip[A, B1, B2, B3, B4](
+      s1: Scan[A, B1],
+      s2: Scan[A, B2],
+      s3: Scan[A, B3],
+      s4: Scan[A, B4]
+  ): Scan[A, (B1, B2, B3, B4)] =
     applicativeInstance.tuple4(s1, s2, s3, s4)
 
   /** @group composing */
-  def zip[A, B1, B2, B3, B4, B5](s1: Scan[A, B1],
-                                 s2: Scan[A, B2],
-                                 s3: Scan[A, B3],
-                                 s4: Scan[A, B4],
-                                 s5: Scan[A, B5]): Scan[A, (B1, B2, B3, B4, B5)] =
+  def zip[A, B1, B2, B3, B4, B5](
+      s1: Scan[A, B1],
+      s2: Scan[A, B2],
+      s3: Scan[A, B3],
+      s4: Scan[A, B4],
+      s5: Scan[A, B5]
+  ): Scan[A, (B1, B2, B3, B4, B5)] =
     applicativeInstance.tuple5(s1, s2, s3, s4, s5)
 
   /** @group composing */
-  def zip[A, B1, B2, B3, B4, B5, B6](s1: Scan[A, B1],
-                                     s2: Scan[A, B2],
-                                     s3: Scan[A, B3],
-                                     s4: Scan[A, B4],
-                                     s5: Scan[A, B5],
-                                     s6: Scan[A, B6]): Scan[A, (B1, B2, B3, B4, B5, B6)] =
+  def zip[A, B1, B2, B3, B4, B5, B6](
+      s1: Scan[A, B1],
+      s2: Scan[A, B2],
+      s3: Scan[A, B3],
+      s4: Scan[A, B4],
+      s5: Scan[A, B5],
+      s6: Scan[A, B6]
+  ): Scan[A, (B1, B2, B3, B4, B5, B6)] =
     applicativeInstance.tuple6(s1, s2, s3, s4, s5, s6)
 
   /** @group composing */
-  def zip[A, B1, B2, B3, B4, B5, B6, B7](s1: Scan[A, B1],
-                                         s2: Scan[A, B2],
-                                         s3: Scan[A, B3],
-                                         s4: Scan[A, B4],
-                                         s5: Scan[A, B5],
-                                         s6: Scan[A, B6],
-                                         s7: Scan[A, B7]): Scan[A, (B1, B2, B3, B4, B5, B6, B7)] =
+  def zip[A, B1, B2, B3, B4, B5, B6, B7](
+      s1: Scan[A, B1],
+      s2: Scan[A, B2],
+      s3: Scan[A, B3],
+      s4: Scan[A, B4],
+      s5: Scan[A, B5],
+      s6: Scan[A, B6],
+      s7: Scan[A, B7]
+  ): Scan[A, (B1, B2, B3, B4, B5, B6, B7)] =
     applicativeInstance.tuple7(s1, s2, s3, s4, s5, s6, s7)
 
   /** @group composing */
@@ -361,7 +361,8 @@ object Scan {
       s5: Scan[A, B5],
       s6: Scan[A, B6],
       s7: Scan[A, B7],
-      s8: Scan[A, B8]): Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8)] =
+      s8: Scan[A, B8]
+  ): Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8)] =
     applicativeInstance.tuple8(s1, s2, s3, s4, s5, s6, s7, s8)
 
   /** @group composing */
@@ -374,7 +375,8 @@ object Scan {
       s6: Scan[A, B6],
       s7: Scan[A, B7],
       s8: Scan[A, B8],
-      s9: Scan[A, B9]): Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9)] =
+      s9: Scan[A, B9]
+  ): Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9)] =
     applicativeInstance.tuple9(s1, s2, s3, s4, s5, s6, s7, s8, s9)
 
   /** @group composing */
@@ -388,7 +390,8 @@ object Scan {
       s7: Scan[A, B7],
       s8: Scan[A, B8],
       s9: Scan[A, B9],
-      s10: Scan[A, B10]): Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10)] =
+      s10: Scan[A, B10]
+  ): Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10)] =
     applicativeInstance.tuple10(s1, s2, s3, s4, s5, s6, s7, s8, s9, s10)
 
   /** @group composing */
@@ -403,7 +406,8 @@ object Scan {
       s8: Scan[A, B8],
       s9: Scan[A, B9],
       s10: Scan[A, B10],
-      s11: Scan[A, B11]): Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11)] =
+      s11: Scan[A, B11]
+  ): Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11)] =
     applicativeInstance.tuple11(s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11)
 
   /** @group composing */
@@ -419,7 +423,8 @@ object Scan {
       s9: Scan[A, B9],
       s10: Scan[A, B10],
       s11: Scan[A, B11],
-      s12: Scan[A, B12]): Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12)] =
+      s12: Scan[A, B12]
+  ): Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12)] =
     applicativeInstance.tuple12(s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12)
 
   /** @group composing */
@@ -436,7 +441,8 @@ object Scan {
       s10: Scan[A, B10],
       s11: Scan[A, B11],
       s12: Scan[A, B12],
-      s13: Scan[A, B13]): Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13)] =
+      s13: Scan[A, B13]
+  ): Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13)] =
     applicativeInstance.tuple13(s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13)
 
   /** @group composing */
@@ -454,26 +460,28 @@ object Scan {
       s11: Scan[A, B11],
       s12: Scan[A, B12],
       s13: Scan[A, B13],
-      s14: Scan[A, B14]): Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14)] =
+      s14: Scan[A, B14]
+  ): Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14)] =
     applicativeInstance.tuple14(s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14)
 
   /** @group composing */
-  def zip[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15](s1: Scan[A, B1],
-                                                                               s2: Scan[A, B2],
-                                                                               s3: Scan[A, B3],
-                                                                               s4: Scan[A, B4],
-                                                                               s5: Scan[A, B5],
-                                                                               s6: Scan[A, B6],
-                                                                               s7: Scan[A, B7],
-                                                                               s8: Scan[A, B8],
-                                                                               s9: Scan[A, B9],
-                                                                               s10: Scan[A, B10],
-                                                                               s11: Scan[A, B11],
-                                                                               s12: Scan[A, B12],
-                                                                               s13: Scan[A, B13],
-                                                                               s14: Scan[A, B14],
-                                                                               s15: Scan[A, B15])
-    : Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15)] =
+  def zip[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15](
+      s1: Scan[A, B1],
+      s2: Scan[A, B2],
+      s3: Scan[A, B3],
+      s4: Scan[A, B4],
+      s5: Scan[A, B5],
+      s6: Scan[A, B6],
+      s7: Scan[A, B7],
+      s8: Scan[A, B8],
+      s9: Scan[A, B9],
+      s10: Scan[A, B10],
+      s11: Scan[A, B11],
+      s12: Scan[A, B12],
+      s13: Scan[A, B13],
+      s14: Scan[A, B14],
+      s15: Scan[A, B15]
+  ): Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15)] =
     applicativeInstance.tuple15(s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15)
 
   /** @group composing */
@@ -493,8 +501,8 @@ object Scan {
       s13: Scan[A, B13],
       s14: Scan[A, B14],
       s15: Scan[A, B15],
-      s16: Scan[A, B16])
-    : Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16)] =
+      s16: Scan[A, B16]
+  ): Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16)] =
     applicativeInstance.tuple16(
       s1,
       s2,
@@ -511,7 +519,8 @@ object Scan {
       s13,
       s14,
       s15,
-      s16)
+      s16
+    )
 
   /** @group composing */
   def zip[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16, B17](
@@ -531,8 +540,8 @@ object Scan {
       s14: Scan[A, B14],
       s15: Scan[A, B15],
       s16: Scan[A, B16],
-      s17: Scan[A, B17])
-    : Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16, B17)] =
+      s17: Scan[A, B17]
+  ): Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16, B17)] =
     applicativeInstance.tuple17(
       s1,
       s2,
@@ -550,7 +559,8 @@ object Scan {
       s14,
       s15,
       s16,
-      s17)
+      s17
+    )
 
   /** @group composing */
   def zip[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16, B17, B18](
@@ -571,8 +581,8 @@ object Scan {
       s15: Scan[A, B15],
       s16: Scan[A, B16],
       s17: Scan[A, B17],
-      s18: Scan[A, B18])
-    : Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16, B17, B18)] =
+      s18: Scan[A, B18]
+  ): Scan[A, (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16, B17, B18)] =
     applicativeInstance.tuple18(
       s1,
       s2,
@@ -591,7 +601,8 @@ object Scan {
       s15,
       s16,
       s17,
-      s18)
+      s18
+    )
 
   /** @group composing */
   def zip[A, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16, B17, B18, B19](
@@ -613,9 +624,11 @@ object Scan {
       s16: Scan[A, B16],
       s17: Scan[A, B17],
       s18: Scan[A, B18],
-      s19: Scan[A, B19])
-    : Scan[A,
-           (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16, B17, B18, B19)] =
+      s19: Scan[A, B19]
+  ): Scan[
+    A,
+    (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16, B17, B18, B19)
+  ] =
     applicativeInstance.tuple19(
       s1,
       s2,
@@ -635,51 +648,57 @@ object Scan {
       s16,
       s17,
       s18,
-      s19)
+      s19
+    )
 
   /** @group composing */
-  def zip[A,
-          B1,
-          B2,
-          B3,
-          B4,
-          B5,
-          B6,
-          B7,
-          B8,
-          B9,
-          B10,
-          B11,
-          B12,
-          B13,
-          B14,
-          B15,
-          B16,
-          B17,
-          B18,
-          B19,
-          B20](s1: Scan[A, B1],
-               s2: Scan[A, B2],
-               s3: Scan[A, B3],
-               s4: Scan[A, B4],
-               s5: Scan[A, B5],
-               s6: Scan[A, B6],
-               s7: Scan[A, B7],
-               s8: Scan[A, B8],
-               s9: Scan[A, B9],
-               s10: Scan[A, B10],
-               s11: Scan[A, B11],
-               s12: Scan[A, B12],
-               s13: Scan[A, B13],
-               s14: Scan[A, B14],
-               s15: Scan[A, B15],
-               s16: Scan[A, B16],
-               s17: Scan[A, B17],
-               s18: Scan[A, B18],
-               s19: Scan[A, B19],
-               s20: Scan[A, B20]): Scan[
+  def zip[
+      A,
+      B1,
+      B2,
+      B3,
+      B4,
+      B5,
+      B6,
+      B7,
+      B8,
+      B9,
+      B10,
+      B11,
+      B12,
+      B13,
+      B14,
+      B15,
+      B16,
+      B17,
+      B18,
+      B19,
+      B20
+  ](
+      s1: Scan[A, B1],
+      s2: Scan[A, B2],
+      s3: Scan[A, B3],
+      s4: Scan[A, B4],
+      s5: Scan[A, B5],
+      s6: Scan[A, B6],
+      s7: Scan[A, B7],
+      s8: Scan[A, B8],
+      s9: Scan[A, B9],
+      s10: Scan[A, B10],
+      s11: Scan[A, B11],
+      s12: Scan[A, B12],
+      s13: Scan[A, B13],
+      s14: Scan[A, B14],
+      s15: Scan[A, B15],
+      s16: Scan[A, B16],
+      s17: Scan[A, B17],
+      s18: Scan[A, B18],
+      s19: Scan[A, B19],
+      s20: Scan[A, B20]
+  ): Scan[
     A,
-    (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16, B17, B18, B19, B20)] =
+    (B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16, B17, B18, B19, B20)
+  ] =
     applicativeInstance.tuple20(
       s1,
       s2,
@@ -700,7 +719,8 @@ object Scan {
       s17,
       s18,
       s19,
-      s20)
+      s20
+    )
 
   /** @group instances */
   implicit val arrowInstance: Arrow[Scan] = new Arrow[Scan] {
@@ -711,19 +731,16 @@ object Scan {
       Scan.lift(identity)
 
     override def compose[A, B, C](f: Scan[B, C], g: Scan[A, B]): Scan[A, C] =
-      Scan[(f.State, g.State), A, C]((f.initialState, g.initialState)) {
-        case ((fs, gs), a) =>
-          val (gs_, b) = g.step(gs, a)
-          val (fs_, c) = f.step(fs, b)
-          ((fs_, gs_), c)
+      Scan[(f.State, g.State), A, C]((f.initialState, g.initialState)) { case ((fs, gs), a) =>
+        val (gs_, b) = g.step(gs, a)
+        val (fs_, c) = f.step(fs, b)
+        ((fs_, gs_), c)
       }
 
     override def first[A, B, C](fa: Scan[A, B]): Scan[(A, C), (B, C)] =
-      Scan[fa.State, (A, C), (B, C)](fa.initialState) {
-        case (o, (a, c)) => {
-          val (n, b) = fa.step(o, a)
-          (n, (b, c))
-        }
+      Scan[fa.State, (A, C), (B, C)](fa.initialState) { case (o, (a, c)) =>
+        val (n, b) = fa.step(o, a)
+        (n, (b, c))
       }
   }
 }

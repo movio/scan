@@ -38,12 +38,10 @@ class ScanTest extends FunSuite with GeneratorDrivenPropertyChecks {
 
   test("Scans can be chained using `andThen`") {
     forAll { (f: Scan[Int, Int], g: Scan[Int, Int], input: Stream[Int]) =>
-      {
-        whenever(input.nonEmpty) {
-          val actual: Stream[Int] = (f andThen g).scan(input)
-          val expected: Stream[Int] = g.scan(f.scan(input))
-          assert(actual == expected)
-        }
+      whenever(input.nonEmpty) {
+        val actual: Stream[Int] = (f andThen g).scan(input)
+        val expected: Stream[Int] = g.scan(f.scan(input))
+        assert(actual == expected)
       }
     }
   }
@@ -59,12 +57,10 @@ class ScanTest extends FunSuite with GeneratorDrivenPropertyChecks {
 
   test("f >>> g == g.scan . f.scan") {
     forAll { (f: Scan[Int, Int], g: Scan[Int, Int], input: Stream[Int]) =>
-      {
-        whenever(input.nonEmpty) {
-          val actual: Stream[Int] = (f >>> g).scan(input)
-          val expected: Stream[Int] = g.scan(f.scan(input))
-          assert(actual == expected)
-        }
+      whenever(input.nonEmpty) {
+        val actual: Stream[Int] = (f >>> g).scan(input)
+        val expected: Stream[Int] = g.scan(f.scan(input))
+        assert(actual == expected)
       }
     }
   }
@@ -76,8 +72,8 @@ class ScanTest extends FunSuite with GeneratorDrivenPropertyChecks {
         val actual: Int = scan.scan(input.toStream).last
         val expected: Int = {
           val foldInit: (Int, Int) = (init, 0)
-          val foldStep: ((Int, Int), Int) => (Int, Int) = {
-            case ((oldState, _), elem) => step(oldState, elem)
+          val foldStep: ((Int, Int), Int) => (Int, Int) = { case ((oldState, _), elem) =>
+            step(oldState, elem)
           }
           input.foldLeft(foldInit)(foldStep)._2
         }
@@ -158,19 +154,18 @@ class ScanTest extends FunSuite with GeneratorDrivenPropertyChecks {
 
   test("laziness") {
     var count = 0
-    val scan = Scan.lift[Int, Int](i => { count = count + 1; i })
-    scan.scan(Stream.fill(1000)(1)).take(10).foreach(i => {})
+    val scan = Scan.lift[Int, Int] { i => count = count + 1; i }
+    scan.scan(Stream.fill(1000)(1)).take(10).foreach { i => }
     count shouldBe 10
   }
 }
 
 object Utils {
-  implicit val genScan: Gen[Scan[Int, Int]] = {
+  implicit val genScan: Gen[Scan[Int, Int]] =
     for {
       fun <- Gen.function2[Int, Int, (Int, Int)](Gen.zip(Gen.choose(-99, 99), Gen.choose(-99, 99)))
       init <- Gen.choose(-99, 99)
     } yield Scan(init)(fun)
-  }
 
   implicit val arbScan: Arbitrary[Scan[Int, Int]] = Arbitrary(genScan)
 

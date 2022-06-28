@@ -1,8 +1,8 @@
 name := "scan"
 organization := "co.movio"
-version := "0.2.0"
+version := "0.3.0"
 
-scalaVersion := "2.12.8"
+scalaVersion := "2.12.15"
 
 scalacOptions := Seq(
   "-Xlint",
@@ -17,12 +17,12 @@ scalacOptions := Seq(
 
 fork in Test := true
 
-addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")
+addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full)
 
 libraryDependencies ++= Seq(
   "org.typelevel" %% "cats-core" % "1.6.1",
-  "org.scalatest" %% "scalatest" % "3.0.5" % Test,
-  "org.scalacheck" %% "scalacheck" % "1.14.0" % Test
+  "org.scalatest" %% "scalatest" % "3.2.12" % Test,
+  "org.scalacheck" %% "scalacheck" % "1.16.0" % Test
 )
 
 // Override the directory structure settings so that subprojects have the
@@ -36,14 +36,14 @@ libraryDependencies ++= Seq(
 // test/
 //   ATests.scala
 
-sourceDirectory in Compile := baseDirectory.value / "src"
-sourceDirectory in Test := baseDirectory.value / "test"
+Compile / sourceDirectory := baseDirectory.value / "src"
+Test / sourceDirectory := baseDirectory.value / "test"
 
-scalaSource in Compile := baseDirectory.value / "src"
-scalaSource in Test := baseDirectory.value / "test"
+Compile / scalaSource := baseDirectory.value / "src"
+Test / scalaSource := baseDirectory.value / "test"
 
-resourceDirectory in Compile := baseDirectory.value / "resources"
-resourceDirectory in Test := baseDirectory.value / "resources_test"
+Compile / resourceDirectory := baseDirectory.value / "resources"
+Test / resourceDirectory := baseDirectory.value / "resources_test"
 
 // Configure Scaladoc and GitHub pages publishing.
 // Run `scaladoc` in SBT to push.
@@ -61,4 +61,4 @@ scalacOptions in (Compile, doc) ++= Seq(
 
 // Configure other plugins.
 
-scalafmtOnCompile in ThisProject := true
+ThisProject / scalafmtOnCompile := true
